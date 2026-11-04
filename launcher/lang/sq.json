@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} ditë {h} orë",
   "{h} h {m} min": "{h} orë {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "edhe {time} për ta marrë"
+  "{time} left to claim it": "edhe {time} për ta marrë",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "U pastruan {bytes} bajte nga memoria e fshehtë e kompilimit nativ. Kompilimi i ardhshëm me ndryshime do të fillojë nga zero.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Po kryhet një kompilim nativ ose pastrim i memories së fshehtë. Provoni përsëri kur të përfundojë.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Pastrimi i memories së fshehtë native u refuzua për shkak të një skedari ose lidhjeje të papritur: {path}",
+  "Could not access the native build cache: {error}": "Nuk mund të hyhej në memorien e fshehtë të kompilimit nativ: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Vendosni kufirin e memories së fshehtë në GiB; 0 çaktivizon pastrimin automatik."
 }

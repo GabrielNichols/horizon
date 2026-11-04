@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} tagoj {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "restas {time} por postuli ĝin"
+  "{time} left to claim it": "restas {time} por postuli ĝin",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Forigis {bytes} bajtojn el la kaŝmemoro de indiĝena kompilado. La sekva kompilado kun ŝanĝoj komenciĝos de nulo.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Indiĝena kompilado aŭ purigado de kaŝmemoro okazas. Reprovu post ĝia fino.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Rifuzis purigi la indiĝenan kaŝmemoron pro neatendita dosiero aŭ ligilo: {path}",
+  "Could not access the native build cache: {error}": "Ne eblis aliri la kaŝmemoron de indiĝena kompilado: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Enigu limon de kaŝmemoro en GiB; 0 malŝaltas aŭtomatan purigadon."
 }

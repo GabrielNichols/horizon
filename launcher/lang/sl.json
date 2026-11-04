@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dni {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "še {time} za prevzem"
+  "{time} left to claim it": "še {time} za prevzem",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Iz predpomnilnika izvornega prevajanja je bilo izbrisanih {bytes} bajtov. Naslednje prevajanje s spremembami se začne od začetka.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Izvorno prevajanje ali čiščenje predpomnilnika je v teku. Poskusite znova po koncu.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Čiščenje izvornega predpomnilnika je zavrnjeno zaradi nepričakovane datoteke ali povezave: {path}",
+  "Could not access the native build cache: {error}": "Do predpomnilnika izvornega prevajanja ni mogoče dostopati: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Vnesite omejitev predpomnilnika v GiB; 0 izklopi samodejno čiščenje."
 }

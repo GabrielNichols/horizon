@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dì {h} u",
   "{h} h {m} min": "{h} u {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "Manca {time} per ritirall"
+  "{time} left to claim it": "Manca {time} per ritirall",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Scancelad {bytes} byte de la cache de compilazion nativa. La prossima compilazion con modifiche la partirà de zero.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Gh’è in cors ona compilazion nativa o ona netada de la cache. Proeva ancamò quand l’è finida.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Netada de la cache nativa refudada per on file o collegament minga spetad: {path}",
+  "Could not access the native build cache: {error}": "Se poeuv minga acced a la cache de compilazion nativa: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Met on limit de cache in GiB; 0 disativa la netada automatica."
 }

@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dies {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "queden {time} per reclamar-lo"
+  "{time} left to claim it": "queden {time} per reclamar-lo",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "S’han alliberat {bytes} bytes de la memòria cau de compilació nativa. La propera compilació amb canvis es farà des de zero.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Hi ha una compilació nativa o una neteja de la memòria cau en curs. Torneu-ho a provar quan hagi acabat.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "S’ha rebutjat la neteja de la memòria cau nativa per un fitxer o enllaç inesperat: {path}",
+  "Could not access the native build cache: {error}": "No s’ha pogut accedir a la memòria cau de compilació nativa: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Introduïu un límit de memòria cau en GiB; 0 desactiva la neteja automàtica."
 }

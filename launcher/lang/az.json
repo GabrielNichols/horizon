@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} gün {h} saat",
   "{h} h {m} min": "{h} saat {m} dəq",
   "{m} min": "{m} dəq",
-  "{time} left to claim it": "əldə etmək üçün {time} qalıb"
+  "{time} left to claim it": "əldə etmək üçün {time} qalıb",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Yerli yığım keşindən {bytes} bayt silindi. Növbəti dəyişdirilmiş yığım sıfırdan yığılacaq.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Yerli yığım və ya keş təmizlənməsi davam edir. Bitdikdən sonra yenidən cəhd edin.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Gözlənilməz fayl və ya keçid səbəbindən yerli keş təmizlənməsi rədd edildi: {path}",
+  "Could not access the native build cache: {error}": "Yerli yığım keşinə daxil olmaq mümkün olmadı: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Keş həddini GiB ilə daxil edin; 0 avtomatik təmizləməni söndürür."
 }

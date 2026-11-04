@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} ມື້ {h} ຊມ",
   "{h} h {m} min": "{h} ຊມ {m} ນທ",
   "{m} min": "{m} ນທ",
-  "{time} left to claim it": "ເຫຼືອ {time} ເພື່ອຮັບ"
+  "{time} left to claim it": "ເຫຼືອ {time} ເພື່ອຮັບ",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "ລ້າງ {bytes} ໄບຕ໌ຈາກແຄຊການສ້າງແບບ native ແລ້ວ. ການສ້າງຄັ້ງຕໍ່ໄປທີ່ມີການປ່ຽນແປງຈະເລີ່ມໃໝ່.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "ກຳລັງສ້າງແບບ native ຫຼືລ້າງແຄຊ. ລອງອີກຄັ້ງເມື່ອສຳເລັດ.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "ປະຕິເສດການລ້າງແຄຊ native ເນື່ອງຈາກໄຟລ໌ຫຼືລິ້ງທີ່ບໍ່ຄາດໄວ້: {path}",
+  "Could not access the native build cache: {error}": "ບໍ່ສາມາດເຂົ້າເຖິງແຄຊການສ້າງແບບ native: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "ປ້ອນຂີດຈຳກັດແຄຊເປັນ GiB; 0 ປິດການລ້າງອັດຕະໂນມັດ."
 }

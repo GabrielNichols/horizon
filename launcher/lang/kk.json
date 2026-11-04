@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} күн {h} сағ",
   "{h} h {m} min": "{h} сағ {m} мин",
   "{m} min": "{m} мин",
-  "{time} left to claim it": "Алуға {time} қалды"
+  "{time} left to claim it": "Алуға {time} қалды",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Нативті құрастыру кэшінен {bytes} байт тазартылды. Өзгерістері бар келесі құрастыру нөлден басталады.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Нативті құрастыру немесе кэшті тазарту орындалуда. Аяқталған соң қайталап көріңіз.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Күтпеген файл не сілтеме салдарынан нативті кэшті тазарту қабылданбады: {path}",
+  "Could not access the native build cache: {error}": "Нативті құрастыру кэшіне қатынау мүмкін болмады: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Кэш шегін GiB түрінде енгізіңіз; 0 автоматты тазартуды өшіреді."
 }

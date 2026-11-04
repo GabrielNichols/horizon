@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dì {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "ghe resta {time} par ritirarlo"
+  "{time} left to claim it": "ghe resta {time} par ritirarlo",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Scançelà {bytes} byte da la cache de conpilasion nativa. La prossima conpilasion co canbiamenti la partirà da zero.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Ghe xe na conpilasion nativa o na pulisia de la cache in corso. Riprova co la xe finia.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Pulisia de la cache nativa refudada par on file o cołegamento no previsto: {path}",
+  "Could not access the native build cache: {error}": "No se ga podesto acédar a la cache de conpilasion nativa: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Meti on limite de cache in GiB; 0 desativa la pulisia automàtega."
 }

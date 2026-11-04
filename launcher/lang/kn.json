@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} ದಿನಗಳು {h} ಗಂ",
   "{h} h {m} min": "{h} ಗಂ {m} ನಿಮಿ",
   "{m} min": "{m} ನಿಮಿ",
-  "{time} left to claim it": "ಪಡೆಯಲು {time} ಉಳಿದಿದೆ"
+  "{time} left to claim it": "ಪಡೆಯಲು {time} ಉಳಿದಿದೆ",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "ಸ್ಥಳೀಯ ಬಿಲ್ಡ್ ಸಂಗ್ರಹದ {bytes} ಬೈಟ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗಿದೆ. ಬದಲಾವಣೆಗಳಿರುವ ಮುಂದಿನ ಬಿಲ್ಡ್ ಮೊದಲಿನಿಂದ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "ಸ್ಥಳೀಯ ಬಿಲ್ಡ್ ಅಥವಾ ಸಂಗ್ರಹ ತೆರವು ಕಾರ್ಯ ನಡೆಯುತ್ತಿದೆ. ಮುಗಿದ ಬಳಿಕ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "ಅನಿರೀಕ್ಷಿತ ಫೈಲ್ ಅಥವಾ ಲಿಂಕ್‌ನಿಂದ ಸ್ಥಳೀಯ ಸಂಗ್ರಹ ತೆರವು ನಿರಾಕರಿಸಲಾಗಿದೆ: {path}",
+  "Could not access the native build cache: {error}": "ಸ್ಥಳೀಯ ಬಿಲ್ಡ್ ಸಂಗ್ರಹವನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "ಸಂಗ್ರಹ ಮಿತಿಯನ್ನು GiB ಯಲ್ಲಿ ನಮೂದಿಸಿ; 0 ಸ್ವಯಂಚಾಲಿತ ತೆರವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ."
 }

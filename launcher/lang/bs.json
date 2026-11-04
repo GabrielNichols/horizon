@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dana {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "preostalo {time} za preuzimanje"
+  "{time} left to claim it": "preostalo {time} za preuzimanje",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Obrisano je {bytes} bajtova predmemorije nativne kompilacije. Sljedeća kompilacija s izmjenama kreće od početka.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Nativna kompilacija ili čišćenje predmemorije je u toku. Pokušajte ponovo kada završi.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Čišćenje nativne predmemorije odbijeno zbog neočekivane datoteke ili veze: {path}",
+  "Could not access the native build cache: {error}": "Nije moguće pristupiti predmemoriji nativne kompilacije: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Unesite ograničenje predmemorije u GiB; 0 isključuje automatsko čišćenje."
 }

@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "izinsuku ezingu-{d} amahora angu-{h}",
   "{h} h {m} min": "amahora angu-{h} nemizuzu engu-{m}",
   "{m} min": "imizuzu engu-{m}",
-  "{time} left to claim it": "kusele {time} ukuyithatha"
+  "{time} left to claim it": "kusele {time} ukuyithatha",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Kusulwe amabhayithi angu-{bytes} enqolobaneni yokwakha ye-native. Ukwakha okulandelayo okunezinguquko kuzoqala phansi.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Ukwakha kwe-native noma ukuhlanza inqolobane kuyaqhubeka. Zama futhi uma sekuqediwe.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Ukuhlanza inqolobane ye-native kwenqatshiwe ngenxa yefayela noma isixhumanisi esingalindelekile: {path}",
+  "Could not access the native build cache: {error}": "Ayikwazanga ukufinyelela inqolobane yokwakha ye-native: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Faka umkhawulo wenqolobane nge-GiB; 0 ikhubaza ukuhlanza okuzenzakalelayo."
 }

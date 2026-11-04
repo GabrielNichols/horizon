@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dagar {h} klst.",
   "{h} h {m} min": "{h} klst. {m} mín.",
   "{m} min": "{m} mín.",
-  "{time} left to claim it": "{time} eftir til að sækja það"
+  "{time} left to claim it": "{time} eftir til að sækja það",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "{bytes} bæti voru hreinsuð úr skyndiminni innbyggðrar smíðar. Næsta smíð með breytingum byrjar frá grunni.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Innbyggð smíð eða hreinsun skyndiminnis er í gangi. Reyndu aftur þegar henni lýkur.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Hreinsun innbyggðs skyndiminnis hafnað vegna óvæntrar skrár eða tengils: {path}",
+  "Could not access the native build cache: {error}": "Ekki tókst að opna skyndiminni innbyggðrar smíðar: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Sláðu inn hámark skyndiminnis í GiB; 0 slekkur á sjálfvirkri hreinsun."
 }

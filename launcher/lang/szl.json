@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dni {h} godz.",
   "{h} h {m} min": "{h} godz. {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "zostało {time} na ôdbiōr"
+  "{time} left to claim it": "zostało {time} na ôdbiōr",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Wyczyszczōno {bytes} bajtōw pamiyńci podryncznyj natywnyj kompilacyje. Nastympno kompilacyjo ze zmianami zacznie sie ôd zera.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Trwo natywno kompilacyjo abo czyszczynie pamiyńci podryncznyj. Sprōbuj zaś, jak sie skōńczy.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Ôdmōwiōno czyszczynio natywnyj pamiyńci podryncznyj bez niyspodziywany zbiōr abo link: {path}",
+  "Could not access the native build cache: {error}": "Niy idzie dostać sie do pamiyńci podryncznyj natywnyj kompilacyje: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Wkludź limit pamiyńci podryncznyj w GiB; 0 wyłōnczo autōmatyczne czyszczynie."
 }

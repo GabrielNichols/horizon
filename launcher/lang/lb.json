@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} Deeg {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "Nach {time}, fir et ofzehuelen"
+  "{time} left to claim it": "Nach {time}, fir et ofzehuelen",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "{bytes} Bytes vum native Build-Cache goufe geläscht. Den nächste Build mat Ännerunge fänkt vun Null un.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "En native Build oder eng Cache-Botz leeft. Probéiert et nach eng Kéier, wann et fäerdeg ass.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Native Cache-Botz wéinst enger onerwaarter Datei oder Verknëppung refuséiert: {path}",
+  "Could not access the native build cache: {error}": "Den native Build-Cache konnt net opgemaach ginn: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Gitt eng Cache-Grenz a GiB an; 0 schalt déi automatesch Botz aus."
 }

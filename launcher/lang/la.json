@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dies {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "{time} reliquum ad vindicandum"
+  "{time} left to claim it": "{time} reliquum ad vindicandum",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "{bytes} octeti memoriae compilationis nativae deleti sunt. Proxima compilatio mutata ab initio fiet.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Compilatio nativa vel purgatio memoriae agitur. Iterum conare ubi perfecta erit.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Purgatio memoriae nativae ob fasciculum vel nexum inopinatum recusata est: {path}",
+  "Could not access the native build cache: {error}": "Memoria compilationis nativae adiri non potuit: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Finem memoriae in GiB insere; 0 purgationem automaticam exstinguit."
 }

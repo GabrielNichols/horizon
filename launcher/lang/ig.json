@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "ụbọchị {d} awa {h}",
   "{h} h {m} min": "awa {h} nkeji {m}",
   "{m} min": "nkeji {m}",
-  "{time} left to claim it": "{time} fọdụrụ iji nweta ya"
+  "{time} left to claim it": "{time} fọdụrụ iji nweta ya",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Ehichapụrụ byte {bytes} na cache nrụpụta native. Nrụpụta ọzọ nwere mgbanwe ga-amalite site na mmalite.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Nrụpụta native ma ọ bụ nhicha cache na-aga n’ihu. Nwaa ọzọ mgbe ọ gwụchara.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Ajụrụ nhicha cache native n’ihi faịlụ ma ọ bụ njikọ a na-atụghị anya ya: {path}",
+  "Could not access the native build cache: {error}": "Enweghị ike ịbanye na cache nrụpụta native: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Tinye oke cache na GiB; 0 na-agbanyụ nhicha akpaaka."
 }

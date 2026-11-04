@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} օր {h} ժ",
   "{h} h {m} min": "{h} ժ {m} րոպե",
   "{m} min": "{m} րոպե",
-  "{time} left to claim it": "Մնացել է {time}՝ այն ստանալու համար"
+  "{time} left to claim it": "Մնացել է {time}՝ այն ստանալու համար",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Մաքրվել է բնիկ կառուցման քեշի {bytes} բայթ։ Փոփոխություններով հաջորդ կառուցումը կսկսվի զրոյից։",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Ընթանում է բնիկ կառուցում կամ քեշի մաքրում։ Կրկին փորձեք ավարտից հետո։",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Բնիկ քեշի մաքրումը մերժվել է անսպասելի ֆայլի կամ հղման պատճառով՝ {path}",
+  "Could not access the native build cache: {error}": "Չհաջողվեց մուտք գործել բնիկ կառուցման քեշ՝ {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Մուտքագրեք քեշի սահմանը GiB-ով․ 0-ն անջատում է ավտոմատ մաքրումը։"
 }

@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dagar {h} t",
   "{h} h {m} min": "{h} t {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "{time} eftir at krevja tað"
+  "{time} left to claim it": "{time} eftir at krevja tað",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "{bytes} být vórðu strikað úr goymsluni fyri upprunasmíð. Næsta smíð við broytingum byrjar av nýggjum.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Upprunasmíð ella reinsan av goymslu er í gongd. Royn aftur, tá ið tað er liðugt.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Noktaði at reinsa upprunagoymsluna vegna eina óvæntaða fílu ella leinkju: {path}",
+  "Could not access the native build cache: {error}": "Fekk ikki atgongd til goymsluna fyri upprunasmíð: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Skriva eitt goymslumark í GiB; 0 slekkir sjálvvirkna reinsan."
 }

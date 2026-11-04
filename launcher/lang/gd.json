@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} làithean {h} h",
   "{h} h {m} min": "{h} h {m} mion",
   "{m} min": "{m} mion",
-  "{time} left to claim it": "{time} air fhàgail airson a thagradh"
+  "{time} left to claim it": "{time} air fhàgail airson a thagradh",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Chaidh {bytes} baidht a ghlanadh às an tasgadan togail dhùthchasach. Tòisichidh an ath thogail le atharraichean às ùr.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Tha togail dhùthchasach no glanadh tasgadain a’ dol air adhart. Feuch ris a-rithist nuair a bhios e deiseil.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Chaidh glanadh an tasgadain dhùthchasaich a dhiùltadh air sgàth faidhle no ceangal ris nach robh dùil: {path}",
+  "Could not access the native build cache: {error}": "Cha b’ urrainn dhuinn an tasgadan togail dùthchasach inntrigeadh: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Cuir a-steach crìoch tasgadain ann an GiB; cuiridh 0 glanadh fèin-obrachail à comas."
 }

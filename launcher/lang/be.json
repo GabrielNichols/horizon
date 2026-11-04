@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} дн. {h} гадз",
   "{h} h {m} min": "{h} гадз {m} хв",
   "{m} min": "{m} хв",
-  "{time} left to claim it": "засталося {time}, каб атрымаць"
+  "{time} left to claim it": "засталося {time}, каб атрымаць",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Ачышчана {bytes} байтаў кэша натыўнай зборкі. Наступная зборка са зменамі будзе выканана з нуля.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Выконваецца натыўная зборка або ачыстка кэша. Паўтарыце спробу пасля завяршэння.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Ачыстка натыўнага кэша адхілена праз нечаканы файл або спасылку: {path}",
+  "Could not access the native build cache: {error}": "Не ўдалося атрымаць доступ да кэша натыўнай зборкі: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Увядзіце ліміт кэша ў GiB; 0 адключае аўтаматычную ачыстку."
 }

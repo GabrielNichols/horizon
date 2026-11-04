@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} dage {h} oor",
   "{h} h {m} min": "{h} oor {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "Nog {time} um 't op te eise"
+  "{time} left to claim it": "Nog {time} um 't op te eise",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "{bytes} bytes van de native bouwcache zien gewis. De volgende bouw mit verangeringe begint opnuuj.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Dao löp ’ne native bouw of cache-opruiming. Probeer ’t opnuuj es ’t klaor is.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Native cache-opruiming geweigerd door ’n ónverwachte file of koppeling: {path}",
+  "Could not access the native build cache: {error}": "De native bouwcache kós neet geöpend waere: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Vul ’n cachelimiet in GiB in; 0 zet automatisch opruime oet."
 }

@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} טעג {h} שע׳",
   "{h} h {m} min": "{h} שע׳ {m} מין",
   "{m} min": "{m} מין",
-  "{time} left to claim it": "{time} איבערגעבליבן צו באַקומען עס"
+  "{time} left to claim it": "{time} איבערגעבליבן צו באַקומען עס",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "אויסגעמעקט {bytes} בייטן פֿון דעם נאַטיוון בוי־קאַש. דער קומענדיקער בוי מיט ענדערונגען וועט אָנהייבן פֿון אָנהייב.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "אַ נאַטיווער בוי אָדער קאַש־רייניקונג לויפט. פּרוּווט ווידער ווען עס ענדיקט זיך.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "די נאַטיווע קאַש־רייניקונג איז אָפּגעזאָגט צוליב אַן אומגעריכטער טעקע אָדער פֿאַרבינדונג: {path}",
+  "Could not access the native build cache: {error}": "מען קען נישט צוקומען צום נאַטיוון בוי־קאַש: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "גיט אַרײַן אַ קאַש־גרענעץ אין GiB; 0 לעשט אויס אויטאָמאַטישע רייניקונג."
 }

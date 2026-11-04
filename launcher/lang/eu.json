@@ -1152,5 +1152,10 @@
   "{d} days {h} h": "{d} egun {h} h",
   "{h} h {m} min": "{h} h {m} min",
   "{m} min": "{m} min",
-  "{time} left to claim it": "{time} geratzen dira eskatzeko"
+  "{time} left to claim it": "{time} geratzen dira eskatzeko",
+  "Cleared {bytes} bytes of native build cache. The next changed build will compile from scratch.": "Konpilazio natiboaren cacheko {bytes} byte garbitu dira. Aldaketak dituen hurrengo konpilazioa hutsetik egingo da.",
+  "A native build or cache cleanup is running. Try again when it finishes.": "Konpilazio natiboa edo cache-garbiketa abian da. Saiatu berriro amaitzen denean.",
+  "Refusing native cache cleanup at an unexpected file or link: {path}": "Cache natiboa garbitzea ukatu da espero ez zen fitxategi edo esteka batengatik: {path}",
+  "Could not access the native build cache: {error}": "Ezin izan da konpilazio natiboaren cachera sartu: {error}",
+  "Enter a cache limit in GiB; 0 disables automatic cleanup.": "Sartu cachearen muga GiB-tan; 0 balioak garbiketa automatikoa desgaitzen du."
 }
