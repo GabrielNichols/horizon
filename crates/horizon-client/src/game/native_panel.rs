@@ -230,20 +230,38 @@ impl Game<'_> {
     /// the search box at its foot. None when the screen has no room for it.
     fn browser_layout(&self, batch: &HudBatch) -> Option<Layout> {
         let image = self.container_image(batch);
+        let recipes = self
+            .panel
+            .of
+            .as_ref()
+            .is_some_and(|(owner, _)| owner.native_id() == "recipes");
         let left = (image.left + image.width) as f32 + MARGIN;
         let right = batch.width - MARGIN;
-        let columns = (((right - left) / SLOT).floor().max(0.0) as usize).min(COLUMNS.0);
+        let columns = (((right - left) / SLOT).floor().max(0.0) as usize).min(if recipes {
+            9
+        } else {
+            COLUMNS.0
+        });
         if columns < COLUMNS.1 {
             return None;
         }
-        let x = (left + (right - left - columns as f32 * SLOT) / 2.0).floor();
+        let width = columns as f32 * SLOT;
+        let x = if recipes {
+            right - width
+        } else {
+            (left + (right - left - width) / 2.0).floor()
+        };
         let arrows_y = MARGIN;
         let top = arrows_y + 17.0 + 4.0;
         let search = [x, batch.height - MARGIN - 16.0, columns as f32 * SLOT, 16.0];
         let rows = ((search[1] - 4.0 - top) / SLOT).floor().max(0.0) as usize;
         (rows > 0).then_some(Layout {
             centered: false,
-            area: [left, 0.0, right - left, batch.height],
+            area: if recipes {
+                [x, 0.0, right - x, batch.height]
+            } else {
+                [left, 0.0, right - left, batch.height]
+            },
             grid: (x, top),
             columns,
             rows,
@@ -288,13 +306,22 @@ impl Game<'_> {
     }
     /// The stack under the pointer on the panel, an item's or a recipe's,
     /// as the mod sent it and as a stack.
-    fn browser_pointed_stack(&self, layout: &Layout) -> Option<(BrowserStack, ItemStack)> {
+    fn browser_pointed_stack(
+        &self,
+        layout: &Layout,
+        centered: Option<&Layout>,
+    ) -> Option<(BrowserStack, ItemStack)> {
         if self.panel.recipes.is_some() {
-            if let Some((_, sent, stack)) = self.recipe_tab_hovered(layout) {
+            let recipe_layout = centered.unwrap_or(layout);
+            if let Some((_, sent, stack)) = self.recipe_tab_hovered(recipe_layout) {
                 return Some((sent, stack));
             }
-            let (_, _, sent, stack) = self.recipe_slot_hovered(layout)?;
-            return Some((sent, stack));
+            if let Some((_, _, sent, stack)) = self.recipe_slot_hovered(recipe_layout) {
+                return Some((sent, stack));
+            }
+            if centered.is_none() {
+                return None;
+            }
         }
         let (index, stack) = self.browser_hovered(layout)?;
         let items = &self.panel_shown()?.items;
@@ -418,8 +445,7 @@ impl Game<'_> {
         self.panel.search = Some(search);
         if self.carried.is_some() {
             self.draw_carried(batch);
-        } else if let Some(stack) = self.browser_pointed_stack(centered.as_ref().unwrap_or(&layout))
-        {
+        } else if let Some(stack) = self.browser_pointed_stack(&layout, centered.as_ref()) {
             self.draw_stack_tooltip(batch, &stack.1, cursor.0, cursor.1);
         } else {
             self.draw_slot_tooltip(batch);
@@ -568,19 +594,22 @@ impl Game<'_> {
     /// (the `Key` event): the panel's, else a slot's.
     pub(super) fn mod_browser_pointed(&mut self) -> Option<BrowserStack> {
         let batch = self.browser_batch()?;
-        let stack = match self
+        if let Some(layout) = self
             .browser_sync()
             .and_then(|_| self.browser_layout(&batch))
         {
-            // The panel's stacks as the mod sent them.
-            Some(layout) if inside(self.cursor, layout.area) => {
-                return Some(self.browser_pointed_stack(&layout)?.0);
+            let centered = self.recipe_layout(&batch, &layout);
+            if let Some((stack, _)) = self.browser_pointed_stack(&layout, centered.as_ref()) {
+                return Some(stack);
             }
-            _ => {
-                let slot = self.slot_at(&batch, self.cursor.0, self.cursor.1)?;
-                self.slot_view(slot)?
+            if inside(self.cursor, layout.area)
+                || centered.is_some_and(|card| inside(self.cursor, card.area))
+            {
+                return None;
             }
-        };
+        }
+        let slot = self.slot_at(&batch, self.cursor.0, self.cursor.1)?;
+        let stack = self.slot_view(slot)?;
         Some(BrowserStack {
             item: stack.item.to_string(),
             count: stack.count,
