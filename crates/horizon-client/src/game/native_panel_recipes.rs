@@ -192,28 +192,41 @@ impl Shown {
         }
     }
     /// The height of its slots, arrow and button, `room` wide.
-    fn block(&self, room: f32) -> f32 {
+    fn block(&self, layout: &Layout) -> f32 {
         let h = self.inputs().0.1;
-        let (_, _, action) = self.places(room);
+        let (_, _, action) = self.places(layout);
+        let h = if layout.centered && self.layout == BrowserLayout::Grid {
+            3.0 * SLOT
+        } else {
+            h
+        };
         match self.action {
             Some(_) => h.max(action.1 + 12.0),
             None => h,
         }
     }
-    fn height(&self, room: f32) -> f32 {
+    fn height(&self, layout: &Layout) -> f32 {
         let note = if self.note.is_empty() { 0.0 } else { 11.0 };
-        self.block(room) + note + GAP
+        self.block(layout) + note + GAP
     }
     /// Every slot's place from the recipe's corner (the result last), the
     /// arrow's and the action button's: beside the result, or under it
     /// when the panel is `room` wide and that doesn't fit.
-    fn places(&self, room: f32) -> (Vec<(f32, f32)>, (f32, f32), (f32, f32)) {
-        let ((w, h), mut at) = self.inputs();
+    fn places(&self, layout: &Layout) -> (Vec<(f32, f32)>, (f32, f32), (f32, f32)) {
+        let ((mut w, mut h), mut at) = self.inputs();
+        if layout.centered && self.layout == BrowserLayout::Grid {
+            (w, h) = (3.0 * SLOT, 3.0 * SLOT);
+        }
         // The mod's slots beyond the layout's are not shown.
         at.truncate(self.slots.len() - 1);
         let arrow = (w + 4.0, ((h - 16.0) / 2.0).floor());
-        let result = (w + 32.0, ((h - SLOT) / 2.0).floor());
-        let action = if result.0 + SLOT + 16.0 <= room {
+        let result = (
+            w + if layout.centered { 40.0 } else { 32.0 },
+            ((h - SLOT) / 2.0).floor(),
+        );
+        let action = if layout.centered {
+            (result.0 + SLOT + 8.0, result.1 + SLOT + 9.0)
+        } else if result.0 + SLOT + 16.0 <= layout.width() {
             (result.0 + SLOT + 4.0, ((h - 12.0) / 2.0).floor())
         } else {
             (result.0 + 3.0, result.1 + SLOT + 2.0)
@@ -290,7 +303,7 @@ impl Game<'_> {
         let mut starts = vec![0];
         let mut used = 0.0;
         for (i, r) in pages.recipes.iter().enumerate() {
-            let h = r.height(layout.width());
+            let h = r.height(layout);
             if used > 0.0 && used + h > room {
                 starts.push(i);
                 used = 0.0;
@@ -310,8 +323,15 @@ impl Game<'_> {
         let mut y = recipes_top(pages, layout);
         (starts[page]..end)
             .map(|i| {
-                let at = (layout.grid.0, y);
-                y += pages.recipes[i].height(layout.width());
+                let at = (
+                    if layout.centered {
+                        layout.area[0] + 41.0
+                    } else {
+                        layout.grid.0
+                    },
+                    y,
+                );
+                y += pages.recipes[i].height(layout);
                 (i, at)
             })
             .collect()
@@ -356,7 +376,7 @@ impl Game<'_> {
         self.recipes_shown(layout)
             .into_iter()
             .find_map(|(i, (x, y))| {
-                let (at, _, _) = pages.recipes[i].places(layout.width());
+                let (at, _, _) = pages.recipes[i].places(layout);
                 at.iter().enumerate().find_map(|(k, &(sx, sy))| {
                     if !inside(self.cursor, [x + sx, y + sy, SLOT, SLOT]) {
                         return None;
@@ -566,13 +586,39 @@ impl Game<'_> {
             let Some(r) = self.panel.recipes.as_ref().map(|p| &p.recipes[i]) else {
                 break;
             };
-            let (at, arrow, action) = r.places(layout.width());
-            let h = r.block(layout.width());
+            let (at, arrow, action) = r.places(layout);
+            let h = r.block(layout);
             let (cooking, note, button) =
                 (r.layout == BrowserLayout::Cooking, r.note.clone(), r.action);
             let atlas = &self.gui.atlas;
-            for &(sx, sy) in at.iter().filter(|p| p.0.is_finite()) {
-                batch.sprite(atlas, "gui/sprites/container/slot", x + sx, y + sy);
+            if layout.centered && r.layout == BrowserLayout::Grid {
+                recipe_skin(
+                    batch,
+                    atlas,
+                    "horizon/jei/single_recipe_background_v2",
+                    [x - 4.0, y - 4.0, 122.0, 61.0],
+                );
+                for k in 0..9 {
+                    batch.sprite(
+                        atlas,
+                        "horizon/jei/slot",
+                        x + (k % 3) as f32 * SLOT,
+                        y + (k / 3) as f32 * SLOT,
+                    );
+                }
+            }
+            for (slot, &(sx, sy)) in at.iter().enumerate().filter(|(_, p)| p.0.is_finite()) {
+                if layout.centered && slot + 1 == at.len() {
+                    let (x, y) = (x + sx - 4.0, y + sy - 4.0);
+                    batch.sprite(atlas, "horizon/jei/output_slot", x, y);
+                } else {
+                    let sprite = if layout.centered {
+                        "horizon/jei/slot"
+                    } else {
+                        "gui/sprites/container/slot"
+                    };
+                    batch.sprite(atlas, sprite, x + sx, y + sy);
+                }
             }
             if cooking {
                 batch.sprite(
@@ -582,12 +628,22 @@ impl Game<'_> {
                     y + SLOT + 2.0,
                 );
             }
-            batch.sprite(
-                atlas,
-                "gui/sprites/container/furnace/burn_progress",
-                x + arrow.0,
-                y + arrow.1,
-            );
+            if layout.centered && !cooking {
+                let (x, y) = (x + arrow.0 + 4.0, y + arrow.1 + 8.0);
+                let gray = rgba(135, 135, 135, 255);
+                batch.fill(atlas, x, y - 1.5, 14.0, 3.0, gray);
+                for i in 0..8 {
+                    let n = i as f32;
+                    batch.fill(atlas, x + 14.0 + n, y - 7.0 + n, 1.0, 15.0 - 2.0 * n, gray);
+                }
+            } else {
+                batch.sprite(
+                    atlas,
+                    "gui/sprites/container/furnace/burn_progress",
+                    x + arrow.0,
+                    y + arrow.1,
+                );
+            }
             if let Some(enabled) = button {
                 let rect = [x + action.0, y + action.1, 12.0, 12.0];
                 let sprite = match (enabled, inside(cursor, rect)) {
@@ -838,7 +894,7 @@ impl Game<'_> {
         }
         let action = self.recipes_shown(layout).into_iter().find(|&(i, (x, y))| {
             let r = &pages.recipes[i];
-            let (_, _, (ax, ay)) = r.places(layout.width());
+            let (_, _, (ax, ay)) = r.places(layout);
             r.action.is_some() && inside(cursor, [x + ax, y + ay, 12.0, 12.0])
         });
         if let Some((i, _)) = action {

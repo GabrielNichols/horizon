@@ -1336,6 +1336,15 @@ impl HudAtlas {
             // Official Recipes artwork from Just Enough Items, under MIT.
             for (name, png) in [
                 (
+                    "single_recipe_background_v2",
+                    include_bytes!("jei_recipes/single_recipe_background_v2.png").as_slice(),
+                ),
+                ("slot", include_bytes!("jei_recipes/slot.png").as_slice()),
+                (
+                    "output_slot",
+                    include_bytes!("jei_recipes/output_slot.png").as_slice(),
+                ),
+                (
                     "gui_background_v2",
                     include_bytes!("jei_recipes/gui_background_v2.png").as_slice(),
                 ),

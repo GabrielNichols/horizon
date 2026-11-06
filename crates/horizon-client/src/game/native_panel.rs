@@ -302,9 +302,6 @@ impl Game<'_> {
     }
     /// The panel's item under the pointer: its index and stack.
     fn browser_hovered(&self, layout: &Layout) -> Option<(usize, ItemStack)> {
-        if self.panel.recipes.is_some() {
-            return None;
-        }
         let first = self.panel.page * layout.per_page();
         (0..layout.per_page()).find_map(|n| {
             let (x, y) = layout.slot(n);
@@ -442,9 +439,10 @@ impl Game<'_> {
         let Some(layout) = self.browser_layout(&batch) else {
             return false;
         };
-        if let Some(centered) = self.recipe_layout(&batch, &layout) {
+        let centered = self.recipe_layout(&batch, &layout);
+        if let Some(centered) = centered.as_ref() {
             let [x, y, w, h] = centered.area;
-            if self.browser_recipes_press(&centered, &owner, right)
+            if self.browser_recipes_press(centered, &owner, right)
                 || inside(self.cursor, [x - 22.0, y - 20.0, w + 22.0, h + 20.0])
             {
                 return true;
@@ -466,7 +464,7 @@ impl Game<'_> {
             return true;
         }
         search.focused = false;
-        if self.panel.recipes.is_some() {
+        if centered.is_none() && self.panel.recipes.is_some() {
             return self.browser_recipes_press(&layout, &owner, right)
                 || inside(cursor, layout.area);
         }
