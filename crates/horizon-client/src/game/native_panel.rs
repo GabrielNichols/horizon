@@ -127,6 +127,7 @@ impl Panel {
 
 /// Where the panel's parts are this frame.
 pub(super) struct Layout {
+    pub(super) centered: bool,
     /// The panel's whole area, for clicks that hit none of its parts.
     pub(super) area: [f32; 4],
     /// The grid's top left corner, its columns and rows.
@@ -138,6 +139,17 @@ pub(super) struct Layout {
     pub(super) search: [f32; 4],
 }
 impl Layout {
+    pub(super) fn recipe_arrows(&self) -> [[f32; 4]; 2] {
+        if self.centered {
+            let [x, _, width, _] = self.area;
+            return [
+                [x + 6.0, self.arrows_y, 13.0, 13.0],
+                [x + width - 19.0, self.arrows_y, 13.0, 13.0],
+            ];
+        }
+        self.arrows().map(|(x, y)| [x, y, 12.0, 17.0])
+    }
+
     fn per_page(&self) -> usize {
         self.columns * self.rows
     }
@@ -192,9 +204,14 @@ impl Game<'_> {
             self.panel.stacks = stacks;
             // The same title again (the mod updating its buttons) keeps the page.
             let old = self.panel.recipes.take();
-            self.panel.recipes = shown
-                .as_ref()
-                .map(|shown| super::native_panel_recipes::Pages::new(items, shown, old));
+            self.panel.recipes = shown.as_ref().map(|shown| {
+                super::native_panel_recipes::Pages::new(
+                    items,
+                    shown,
+                    old,
+                    of.0.native_id() == "recipes",
+                )
+            });
             self.panel.of = Some(of.clone());
         }
         Some(of.0)
@@ -225,12 +242,45 @@ impl Game<'_> {
         let search = [x, batch.height - MARGIN - 16.0, columns as f32 * SLOT, 16.0];
         let rows = ((search[1] - 4.0 - top) / SLOT).floor().max(0.0) as usize;
         (rows > 0).then_some(Layout {
+            centered: false,
             area: [left, 0.0, right - left, batch.height],
             grid: (x, top),
             columns,
             rows,
             arrows_y,
             search,
+        })
+    }
+    fn recipe_layout(&self, batch: &HudBatch, sidebar: &Layout) -> Option<Layout> {
+        if self.panel.recipes.is_none()
+            || !self
+                .panel
+                .of
+                .as_ref()
+                .is_some_and(|(owner, _)| owner.native_id() == "recipes")
+        {
+            return None;
+        }
+        let width = 198.0;
+        let height = (batch.height - 46.0).min(340.0);
+        let x = ((batch.width - width) / 2.0).floor();
+        let y = ((batch.height - height) / 2.0 + 14.0).floor();
+        (x >= 22.0
+            && x + width + 4.0 <= sidebar.area[0]
+            && height >= 115.0
+            && self
+                .panel
+                .recipes
+                .as_ref()
+                .is_some_and(|p| p.fits_recipe_tabs()))
+        .then_some(Layout {
+            centered: true,
+            area: [x, y, width, height],
+            grid: (x + 9.0, y + 4.0),
+            columns: 10,
+            rows: 0,
+            arrows_y: y + 20.0,
+            search: [x, y + height, width, 0.0],
         })
     }
     fn browser_pages(&self, layout: &Layout) -> usize {
@@ -353,7 +403,11 @@ impl Game<'_> {
             return;
         };
         let cursor = self.cursor;
-        if self.panel.recipes.is_some() {
+        let centered = self.recipe_layout(batch, &layout);
+        if let Some(centered) = centered.as_ref() {
+            self.draw_browser_items(batch, &layout);
+            self.draw_browser_recipes(batch, centered);
+        } else if self.panel.recipes.is_some() {
             self.draw_browser_recipes(batch, &layout);
         } else {
             self.draw_browser_items(batch, &layout);
@@ -367,7 +421,8 @@ impl Game<'_> {
         self.panel.search = Some(search);
         if self.carried.is_some() {
             self.draw_carried(batch);
-        } else if let Some(stack) = self.browser_pointed_stack(&layout) {
+        } else if let Some(stack) = self.browser_pointed_stack(centered.as_ref().unwrap_or(&layout))
+        {
             self.draw_stack_tooltip(batch, &stack.1, cursor.0, cursor.1);
         } else {
             self.draw_slot_tooltip(batch);
@@ -387,6 +442,14 @@ impl Game<'_> {
         let Some(layout) = self.browser_layout(&batch) else {
             return false;
         };
+        if let Some(centered) = self.recipe_layout(&batch, &layout) {
+            let [x, y, w, h] = centered.area;
+            if self.browser_recipes_press(&centered, &owner, right)
+                || inside(self.cursor, [x - 22.0, y - 20.0, w + 22.0, h + 20.0])
+            {
+                return true;
+            }
+        }
         let cursor = self.cursor;
         let shift = self.has_shift_down();
         let atlas = &self.gui.atlas;

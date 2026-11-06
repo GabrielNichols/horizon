@@ -30,6 +30,18 @@ const RECIPE_SLOTS: usize = 9;
 const SLOT_STACKS: usize = 64;
 const TABS: usize = 16;
 
+// The default category order from JEI 31.17.0.108, for the stations Recipes exposes.
+const JEI_STATIONS: [&str; 8] = [
+    "minecraft:crafting_table",
+    "minecraft:blast_furnace",
+    "minecraft:brewing_stand",
+    "minecraft:campfire",
+    "minecraft:furnace",
+    "minecraft:smithing_table",
+    "minecraft:smoker",
+    "minecraft:stonecutter",
+];
+
 /// What the panel shows instead of its items: a title, tabs (`tab` the
 /// selected one) and the recipes.
 #[derive(Clone, Debug, PartialEq)]
@@ -90,18 +102,36 @@ pub(super) struct Pages {
     /// The tabs' icons and the selected one.
     tabs: Vec<(BrowserStack, Option<ItemStack>)>,
     tab: usize,
+    tab_events: Vec<usize>,
     recipes: Vec<Shown>,
     page: usize,
     since: Instant,
 }
 
 impl Pages {
+    pub(super) fn fits_recipe_tabs(&self) -> bool {
+        self.tabs.len() <= 8
+    }
     pub(super) fn new(
         items: &horizon_client::items::Items,
         shown: &RecipePage,
         old: Option<Pages>,
+        official: bool,
     ) -> Self {
-        let (title, list, tab) = (&shown.title, &shown.recipes, shown.tab as usize);
+        let (title, list) = (&shown.title, &shown.recipes);
+        let mut tab_events: Vec<_> = (0..shown.tabs.len()).collect();
+        if official {
+            tab_events.sort_by_key(|&i| {
+                JEI_STATIONS
+                    .iter()
+                    .position(|&station| station == shown.tabs[i].item)
+                    .unwrap_or(JEI_STATIONS.len())
+            });
+        }
+        let tab = tab_events
+            .iter()
+            .position(|&i| i == shown.tab as usize)
+            .unwrap_or(0);
         let kept = old.filter(|o| o.title == *title && o.tab == tab);
         let cycle = |stacks: &[BrowserStack]| -> Vec<(BrowserStack, ItemStack)> {
             stacks
@@ -126,12 +156,15 @@ impl Pages {
             .collect();
         Self {
             title: title.clone(),
-            tabs: shown
-                .tabs
+            tabs: tab_events
                 .iter()
-                .map(|t| (t.clone(), browser_stack(items, t)))
+                .map(|&i| {
+                    let t = &shown.tabs[i];
+                    (t.clone(), browser_stack(items, t))
+                })
                 .collect(),
             tab,
+            tab_events,
             recipes,
             page: kept.as_ref().map_or(0, |o| o.page),
             since: kept.map_or_else(Instant::now, |o| o.since),
@@ -195,6 +228,16 @@ impl Shown {
 
 /// The tabs' places, in rows under the title row.
 fn tab_places(pages: &Pages, layout: &Layout) -> Vec<(f32, f32)> {
+    if layout.centered {
+        return (0..pages.tabs.len())
+            .map(|i| {
+                (
+                    layout.area[0] + 2.0 + i as f32 * 24.0,
+                    layout.area[1] - 20.0,
+                )
+            })
+            .collect();
+    }
     let per_row = ((layout.width() / TAB).floor() as usize).max(1);
     (0..pages.tabs.len())
         .map(|i| {
@@ -205,11 +248,38 @@ fn tab_places(pages: &Pages, layout: &Layout) -> Vec<(f32, f32)> {
         })
         .collect()
 }
+
+fn tab_rect(layout: &Layout, x: f32, y: f32) -> [f32; 4] {
+    if layout.centered {
+        [x, y, 24.0, 22.0]
+    } else {
+        [x, y, SLOT, SLOT]
+    }
+}
+
+fn category_arrows(layout: &Layout) -> [[f32; 4]; 2] {
+    layout
+        .recipe_arrows()
+        .map(|[x, y, w, h]| [x, y - 15.0, w, h])
+}
 /// Where the recipes start: under the title row and the tabs.
 fn recipes_top(pages: &Pages, layout: &Layout) -> f32 {
+    if layout.centered {
+        return layout.area[1] + 48.0;
+    }
     let tabs = tab_places(pages, layout);
     tabs.last()
         .map_or(layout.grid.1 + TITLE, |&(_, y)| y + TAB + 3.0)
+}
+
+fn recipe_skin(
+    batch: &mut HudBatch,
+    atlas: &horizon_client::hud::HudAtlas,
+    sprite: &str,
+    rect: [f32; 4],
+) {
+    let [x, y, w, h] = rect;
+    horizon_client::ui::nine_slice(batch, atlas, sprite, x, y, w, h, u32::MAX);
 }
 
 impl Game<'_> {
@@ -248,6 +318,10 @@ impl Game<'_> {
     }
     fn back_button(&self, layout: &Layout) -> ([f32; 4], String) {
         let label = self.translate("gui.back", "Back");
+        if layout.centered {
+            let [x, y, _, h] = layout.area;
+            return ([x - 18.0, y + h - 20.0, 15.0, 15.0], label);
+        }
         let w = HudBatch::text_width(&self.gui.atlas, &label) + 8.0;
         ([layout.grid.0, layout.grid.1, w, 14.0], label)
     }
@@ -266,7 +340,7 @@ impl Game<'_> {
         let pages = self.panel.recipes.as_ref()?;
         let places = tab_places(pages, layout);
         places.iter().enumerate().find_map(|(i, &(x, y))| {
-            if !inside(self.cursor, [x, y, SLOT, SLOT]) {
+            if !inside(self.cursor, tab_rect(layout, x, y)) {
                 return None;
             }
             let (sent, stack) = pages.tabs.get(i)?;
@@ -293,6 +367,69 @@ impl Game<'_> {
             })
     }
 
+    fn draw_recipes_button(&self, batch: &mut HudBatch, [x, y, w, h]: [f32; 4], enabled: bool) {
+        let rect = [x, y, w, h];
+        let sprite = match (enabled, inside(self.cursor, rect)) {
+            (false, _) => "horizon/jei/button_disabled_v2",
+            (true, false) => "horizon/jei/button_enabled_v2",
+            (true, true) => "horizon/jei/button_highlight_v2",
+        };
+        recipe_skin(batch, &self.gui.atlas, sprite, rect);
+    }
+
+    fn draw_recipes_arrow(
+        &self,
+        batch: &mut HudBatch,
+        rect: [f32; 4],
+        forward: bool,
+        enabled: bool,
+    ) {
+        self.draw_recipes_button(batch, rect, enabled);
+        let [x, y, w, h] = rect;
+        let sprite = if forward {
+            "horizon/jei/icons/arrow_next_v2"
+        } else {
+            "horizon/jei/icons/arrow_previous_v2"
+        };
+        batch.sprite(
+            &self.gui.atlas,
+            sprite,
+            x + ((w - 9.0) / 2.0).floor(),
+            y + ((h - 7.0) / 2.0).floor(),
+        );
+    }
+
+    pub(super) fn draw_browser_arrows(
+        &self,
+        batch: &mut HudBatch,
+        bounds: [[f32; 4]; 2],
+        labels: &[String; 2],
+        enabled: [bool; 2],
+        square: bool,
+    ) {
+        for (i, (rect, on)) in bounds.into_iter().zip(enabled).enumerate() {
+            if square {
+                self.draw_recipes_arrow(batch, rect, i == 1, on);
+            } else if on {
+                let name = ["page_backward", "page_forward"][i];
+                let suffix = if inside(self.cursor, rect) {
+                    "_highlighted"
+                } else {
+                    ""
+                };
+                batch.sprite(
+                    &self.gui.atlas,
+                    &format!("gui/sprites/recipe_book/{name}{suffix}"),
+                    rect[0],
+                    rect[1],
+                );
+            } else {
+                continue;
+            }
+            horizon_client::widgets::record(&labels[i], rect, on);
+        }
+    }
+
     /// Draws the title row, the page's recipes and the page arrows.
     pub(super) fn draw_browser_recipes(&mut self, batch: &mut HudBatch, layout: &Layout) {
         let Some(pages) = &self.panel.recipes else {
@@ -301,29 +438,61 @@ impl Game<'_> {
         let cursor = self.cursor;
         let starts = Self::recipe_pages(pages, layout);
         let page = pages.page.min(starts.len() - 1);
-        let (title, pages_n) = (pages.title.clone(), starts.len());
+        let title = if layout.centered {
+            self.recipe_category_title(pages)
+        } else {
+            pages.title.clone()
+        };
+        let pages_n = starts.len();
         let (back, label) = self.back_button(layout);
         let atlas = &self.gui.atlas;
-        let hover = inside(cursor, back);
-        horizon_client::widgets::declare_action(horizon_client::widgets::Action::Back, back, true);
-        let sprite = if hover {
-            "gui/sprites/widget/button_highlighted"
+        if layout.centered {
+            let [x, y, w, h] = layout.area;
+            recipe_skin(
+                batch,
+                atlas,
+                "horizon/jei/gui_background_v2",
+                [x, y + 1.0, w, h + 2.0],
+            );
+            self.draw_recipes_button(batch, back, true);
+            batch.text(atlas, "<", back[0] + 5.0, back[1] + 3.0, u32::MAX, true);
+            horizon_client::widgets::record(&label, back, true);
+            for top in [y + 5.0, y + 20.0] {
+                batch.fill(
+                    atlas,
+                    x + 6.0,
+                    top,
+                    w - 12.0,
+                    13.0,
+                    rgba(161, 161, 161, 255),
+                );
+            }
         } else {
-            "gui/sprites/widget/button"
-        };
-        horizon_client::ui::nine_slice(
-            batch,
-            atlas,
-            sprite,
-            back[0],
-            back[1],
-            back[2],
-            back[3],
-            u32::MAX,
-        );
-        batch.text(atlas, &label, back[0] + 4.0, back[1] + 3.0, u32::MAX, true);
-        horizon_client::widgets::record(&label, back, true);
-        let room = layout.width() - back[2] - 4.0;
+            let hover = inside(cursor, back);
+            horizon_client::widgets::declare_action(
+                horizon_client::widgets::Action::Back,
+                back,
+                true,
+            );
+            let sprite = if hover {
+                "gui/sprites/widget/button_highlighted"
+            } else {
+                "gui/sprites/widget/button"
+            };
+            horizon_client::ui::nine_slice(
+                batch,
+                atlas,
+                sprite,
+                back[0],
+                back[1],
+                back[2],
+                back[3],
+                u32::MAX,
+            );
+            batch.text(atlas, &label, back[0] + 4.0, back[1] + 3.0, u32::MAX, true);
+            horizon_client::widgets::record(&label, back, true);
+        }
+        let room = layout.width() - if layout.centered { 36.0 } else { back[2] + 4.0 };
         // Cut to the panel with vanilla's ellipsis (CommonComponents.ELLIPSIS).
         let shown = if atlas.font.fit(&title, room) >= title.chars().count() {
             title
@@ -335,45 +504,63 @@ impl Game<'_> {
         batch.text(
             atlas,
             &shown,
-            back[0] + back[2] + 4.0,
-            back[1] + 3.0,
+            if layout.centered {
+                (layout.area[0] + (layout.area[2] - HudBatch::text_width(atlas, &shown)) / 2.0)
+                    .floor()
+                    + 1.0
+            } else {
+                back[0] + back[2] + 4.0
+            },
+            if layout.centered {
+                layout.area[1] + 7.0
+            } else {
+                back[1] + 3.0
+            },
             u32::MAX,
             true,
         );
-        self.draw_recipe_tabs(batch, layout);
-        if pages_n > 1 {
+        if layout.centered {
+            let labels = [
+                self.translate("horizon.recipes.previous_category", "Previous Category"),
+                self.translate("horizon.recipes.next_category", "Next Category"),
+            ];
+            self.draw_browser_arrows(
+                batch,
+                category_arrows(layout),
+                &labels,
+                [pages.tab > 0, pages.tab + 1 < pages.tabs.len()],
+                true,
+            );
+        }
+        if pages_n > 1 || layout.centered {
             let labels = [
                 self.translate("gui.recipebook.previous_page", "Previous Page"),
                 self.translate("gui.recipebook.next_page", "Next Page"),
             ];
             let visible = [page > 0, page + 1 < pages_n];
             let atlas = &self.gui.atlas;
-            for (((x, y), name), (label, visible)) in layout
-                .arrows()
-                .into_iter()
-                .zip(["page_backward", "page_forward"])
-                .zip(labels.iter().zip(visible))
-            {
-                if !visible {
-                    continue;
-                }
-                let suffix = if inside(cursor, [x, y, 12.0, 17.0]) {
-                    "_highlighted"
-                } else {
-                    ""
-                };
-                batch.sprite(
-                    atlas,
-                    &format!("gui/sprites/recipe_book/{name}{suffix}"),
-                    x,
-                    y,
-                );
-                horizon_client::widgets::record(label, [x, y, 12.0, 17.0], true);
-            }
+            self.draw_browser_arrows(
+                batch,
+                layout.recipe_arrows(),
+                &labels,
+                visible,
+                layout.centered,
+            );
             let text = format!("{}/{pages_n}", page + 1);
             let w = HudBatch::text_width(atlas, &text);
             let x = (layout.grid.0 + (layout.width() - w) / 2.0).floor();
-            batch.text(atlas, &text, x, layout.arrows_y + 5.0, u32::MAX, true);
+            batch.text(
+                atlas,
+                &text,
+                x,
+                layout.arrows_y + if layout.centered { 2.0 } else { 5.0 },
+                u32::MAX,
+                true,
+            );
+        }
+        self.draw_recipe_tabs(batch, layout);
+        if layout.centered {
+            self.draw_recipe_stations(batch, layout);
         }
         for (i, (x, y)) in self.recipes_shown(layout) {
             let Some(r) = self.panel.recipes.as_ref().map(|p| &p.recipes[i]) else {
@@ -408,22 +595,35 @@ impl Game<'_> {
                     (true, true) => "gui/sprites/widget/button_highlighted",
                     (true, false) => "gui/sprites/widget/button",
                 };
-                horizon_client::ui::nine_slice(
-                    batch,
-                    atlas,
-                    sprite,
-                    rect[0],
-                    rect[1],
-                    12.0,
-                    12.0,
-                    u32::MAX,
-                );
-                let color = if enabled {
-                    u32::MAX
+                if layout.centered {
+                    self.draw_recipes_button(batch, rect, enabled);
+                    batch.sprite_scaled(
+                        atlas,
+                        "horizon/jei/icons/recipe_transfer",
+                        rect[0] + 2.0,
+                        rect[1] + 2.0,
+                        7.0,
+                        7.0,
+                        u32::MAX,
+                    );
                 } else {
-                    rgba(160, 160, 160, 255)
-                };
-                batch.text(atlas, "+", rect[0] + 3.0, rect[1] + 2.0, color, true);
+                    horizon_client::ui::nine_slice(
+                        batch,
+                        atlas,
+                        sprite,
+                        rect[0],
+                        rect[1],
+                        12.0,
+                        12.0,
+                        u32::MAX,
+                    );
+                    let color = if enabled {
+                        u32::MAX
+                    } else {
+                        rgba(160, 160, 160, 255)
+                    };
+                    batch.text(atlas, "+", rect[0] + 3.0, rect[1] + 2.0, color, true);
+                }
                 horizon_client::widgets::record(&format!("+ {i}"), rect, enabled);
             }
             if !note.is_empty() {
@@ -455,6 +655,27 @@ impl Game<'_> {
         }
     }
 
+    fn recipe_category_title(&self, pages: &Pages) -> String {
+        let station = pages
+            .tabs
+            .get(pages.tab)
+            .map(|(stack, _)| stack.item.as_str());
+        let (key, fallback) = match station {
+            Some("minecraft:crafting_table") => ("container.crafting", "Crafting"),
+            Some("minecraft:furnace") => ("horizon.recipes.category.smelting", "Smelting"),
+            Some("minecraft:smoker") => ("horizon.recipes.category.smoking", "Smoking"),
+            Some("minecraft:blast_furnace") => ("horizon.recipes.category.blasting", "Blasting"),
+            Some("minecraft:campfire") => ("horizon.recipes.category.campfire", "Campfire Cooking"),
+            Some("minecraft:stonecutter") => {
+                ("horizon.recipes.category.stonecutting", "Stonecutting")
+            }
+            Some("minecraft:smithing_table") => ("horizon.recipes.category.smithing", "Smithing"),
+            Some("minecraft:brewing_stand") => ("horizon.recipes.category.brewing", "Brewing"),
+            _ => return pages.title.clone(),
+        };
+        self.translate(key, fallback)
+    }
+
     /// The tabs, on slots; the selected one framed.
     fn draw_recipe_tabs(&mut self, batch: &mut HudBatch, layout: &Layout) {
         let Some(pages) = &self.panel.recipes else {
@@ -465,13 +686,25 @@ impl Game<'_> {
         let selected = pages.tab;
         for (i, (&(x, y), stack)) in places.iter().zip(tabs).enumerate() {
             let atlas = &self.gui.atlas;
-            batch.sprite(atlas, "gui/sprites/container/slot", x, y);
+            let rect = tab_rect(layout, x, y);
+            let hovered = inside(self.cursor, rect);
+            if layout.centered {
+                let sprite = if i == selected {
+                    "horizon/jei/tab_selected"
+                } else {
+                    "horizon/jei/tab_unselected"
+                };
+                batch.sprite(atlas, sprite, x, y);
+            } else {
+                batch.sprite(atlas, "gui/sprites/container/slot", x, y);
+            }
             let Some(stack) = stack else {
                 continue;
             };
-            self.draw_item(batch, &stack, x + 1.0, y + 1.0);
+            let inset = if layout.centered { 4.0 } else { 1.0 };
+            self.draw_item(batch, &stack, x + inset, y + inset);
             // The selected tab: a white frame around its slot.
-            if i == selected {
+            if i == selected && !layout.centered {
                 let white = rgba(255, 255, 255, 255);
                 let atlas = &self.gui.atlas;
                 batch.fill(atlas, x - 1.0, y - 1.0, SLOT + 2.0, 1.0, white);
@@ -479,7 +712,7 @@ impl Game<'_> {
                 batch.fill(atlas, x - 1.0, y, 1.0, SLOT, white);
                 batch.fill(atlas, x + SLOT, y, 1.0, SLOT, white);
             }
-            if inside(self.cursor, [x, y, SLOT, SLOT]) {
+            if hovered && !layout.centered {
                 batch.fill(
                     &self.gui.atlas,
                     x + 1.0,
@@ -490,11 +723,47 @@ impl Game<'_> {
                 );
             }
             let name = self.pack.names.display_item(&stack.item);
-            let rect = [x + 1.0, y + 1.0, 16.0, 16.0];
-            let kind = horizon_client::widgets::Kind::Tab(i == selected);
-            horizon_client::widgets::record_as(&format!("{name} tab"), rect, true, kind);
-            // The kind reaches the bumpers only as a target (`key_focus::drawn_targets`).
-            horizon_client::widgets::target_as(rect, kind);
+            horizon_client::widgets::record_as(
+                &format!("{name} tab"),
+                if layout.centered {
+                    rect
+                } else {
+                    [x + 1.0, y + 1.0, 16.0, 16.0]
+                },
+                true,
+                horizon_client::widgets::Kind::Tab(i == selected),
+            );
+        }
+    }
+
+    fn draw_recipe_stations(&mut self, batch: &mut HudBatch, layout: &Layout) {
+        let Some(pages) = &self.panel.recipes else {
+            return;
+        };
+        let Some((_, Some(station))) = pages.tabs.get(pages.tab) else {
+            return;
+        };
+        let mut stations = vec![station.clone()];
+        if station.item.as_ref() == "minecraft:crafting_table" {
+            stations.push(ItemStack::new("minecraft:crafter", 1));
+        }
+        let [left, y, _, _] = layout.area;
+        let (x, y) = (left - 22.0, y + 1.0);
+        recipe_skin(
+            batch,
+            &self.gui.atlas,
+            "horizon/jei/catalyst_tab_v2",
+            [x, y, 28.0, 10.0 + stations.len() as f32 * 18.0],
+        );
+        for (i, station) in stations.iter().enumerate() {
+            let y = y + 5.0 + i as f32 * 18.0;
+            batch.sprite(
+                &self.gui.atlas,
+                "horizon/jei/recipe_catalyst_slot_background_v2",
+                x + 5.0,
+                y,
+            );
+            self.draw_item(batch, station, x + 6.0, y + 1.0);
         }
     }
 
@@ -511,10 +780,27 @@ impl Game<'_> {
         let cursor = self.cursor;
         let starts = Self::recipe_pages(pages, layout);
         let page = pages.page.min(starts.len() - 1);
-        let [back_arrow, forward] = layout.arrows();
-        let turn = if page > 0 && inside(cursor, [back_arrow.0, back_arrow.1, 12.0, 17.0]) {
+        if layout.centered {
+            let [previous, next] = category_arrows(layout);
+            let category = if pages.tab > 0 && inside(cursor, previous) {
+                Some(pages.tab - 1)
+            } else if pages.tab + 1 < pages.tabs.len() && inside(cursor, next) {
+                Some(pages.tab + 1)
+            } else {
+                None
+            };
+            if let Some(category) = category {
+                self.audio
+                    .play("minecraft:ui.button.click", None, 0.25, 1.0);
+                let index = pages.tab_events[category];
+                self.panel_event(owner, BrowserEvent::Tab(index as u32));
+                return true;
+            }
+        }
+        let [back_arrow, forward] = layout.recipe_arrows();
+        let turn = if page > 0 && inside(cursor, back_arrow) {
             Some(page - 1)
-        } else if page + 1 < starts.len() && inside(cursor, [forward.0, forward.1, 12.0, 17.0]) {
+        } else if page + 1 < starts.len() && inside(cursor, forward) {
             Some(page + 1)
         } else {
             None
@@ -531,7 +817,7 @@ impl Game<'_> {
         if let Some((tab, _, _)) = self.recipe_tab_hovered(layout) {
             self.audio
                 .play("minecraft:ui.button.click", None, 0.25, 1.0);
-            self.panel_event(owner, BrowserEvent::Tab(tab as u32));
+            self.panel_event(owner, BrowserEvent::Tab(pages.tab_events[tab] as u32));
             return true;
         }
         if inside(cursor, self.back_button(layout).0) {
