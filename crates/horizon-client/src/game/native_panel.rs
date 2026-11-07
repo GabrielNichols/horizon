@@ -319,9 +319,7 @@ impl Game<'_> {
             if let Some((_, _, sent, stack)) = self.recipe_slot_hovered(recipe_layout) {
                 return Some((sent, stack));
             }
-            if centered.is_none() {
-                return None;
-            }
+            centered?;
         }
         let (index, stack) = self.browser_hovered(layout)?;
         let items = &self.panel_shown()?.items;
