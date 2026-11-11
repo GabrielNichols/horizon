@@ -133,7 +133,11 @@ impl Pages {
         official_recipes: bool,
     ) -> Self {
         let (title, list, tab) = (&shown.title, &shown.recipes, shown.tab as usize);
-        let station = shown.tabs.get(tab).map(|stack| stack.item.as_str());
+        let card = shown
+            .tabs
+            .get(tab)
+            .and_then(|stack| mod_api::__private::item_key_id(stack.item))
+            .and_then(CookingCard::for_station);
         let kept = old.filter(|o| o.title == *title && o.tab == tab);
         let cycle = |stacks: &[BrowserStack]| -> Vec<(BrowserStack, ItemStack)> {
             stacks
@@ -168,7 +172,7 @@ impl Pages {
                         && r.fluid_inputs.is_empty()
                         && r.fluid_outputs.is_empty()
                     {
-                        station.and_then(CookingCard::for_station)
+                        card
                     } else {
                         None
                     },
